@@ -7,3 +7,5 @@ patrons.txt
 loans.txt
 studyrooms.txt
 reservations.txt
+events.txt
+eventattendance.txt

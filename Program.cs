@@ -7,6 +7,8 @@ var patronRepository = new PatronRepository();
 var loanRepository = new LoanRepository();
 var studyRoomRepository = new StudyRoomRepository();
 var reservationRepository = new RoomReservationRepository();
+var eventRepository = new EventRepository();
+var attendanceRepository = new EventAttendanceRepository();
 
 var books = bookRepository.Load();
 if (books.Count == 0)
@@ -38,9 +40,19 @@ if (rooms.Count == 0)
 
 var reservations = reservationRepository.Load();
 
+var events = eventRepository.Load();
+if (events.Count == 0)
+{
+    events = SeedData.Events();
+    eventRepository.Save(events);
+}
+
+var attendances = attendanceRepository.Load();
+
 var bookService = new BookService(books);
 var loanService = new LoanService(books, patrons, loans);
 var roomReservationService = new RoomReservationService(rooms, patrons, reservations);
+var eventService = new EventService(events, patrons, attendances);
 
 while (true)
 {
@@ -50,7 +62,9 @@ while (true)
     Console.WriteLine("2. Check out a book");
     Console.WriteLine("3. View overdue loans");
     Console.WriteLine("4. Reserve a study room");
-    Console.WriteLine("5. Exit");
+    Console.WriteLine("5. View library events");
+    Console.WriteLine("6. Check in to an event");
+    Console.WriteLine("7. Exit");
     Console.Write("Choose an option: ");
 
     var choice = Console.ReadLine();
@@ -71,6 +85,12 @@ while (true)
             ReserveStudyRoom();
             break;
         case "5":
+            ViewLibraryEvents();
+            break;
+        case "6":
+            CheckInToEvent();
+            break;
+        case "7":
             return;
         default:
             Console.WriteLine("Invalid option.");
@@ -189,5 +209,45 @@ void ReserveStudyRoom()
     if (success)
     {
         reservationRepository.Save(reservations);
+    }
+}
+
+void ViewLibraryEvents()
+{
+    if (events.Count == 0)
+    {
+        Console.WriteLine("No upcoming events.");
+        return;
+    }
+
+    foreach (var libraryEvent in events)
+    {
+        var attending = eventService.GetAttendanceCount(libraryEvent.Id);
+        Console.WriteLine($"[{libraryEvent.Id}] {libraryEvent.Name} — {libraryEvent.Date:MMM d, yyyy} {libraryEvent.StartTime:h:mm tt}-{libraryEvent.EndTime:h:mm tt} — {attending} of {libraryEvent.Capacity} attending");
+    }
+}
+
+void CheckInToEvent()
+{
+    Console.Write("Event ID: ");
+    if (!int.TryParse(Console.ReadLine(), out var eventId))
+    {
+        Console.WriteLine("Invalid event ID.");
+        return;
+    }
+
+    Console.Write("Patron ID: ");
+    if (!int.TryParse(Console.ReadLine(), out var patronId))
+    {
+        Console.WriteLine("Invalid patron ID.");
+        return;
+    }
+
+    var (success, message) = eventService.CheckIn(eventId, patronId);
+    Console.WriteLine(message);
+
+    if (success)
+    {
+        attendanceRepository.Save(attendances);
     }
 }

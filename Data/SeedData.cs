@@ -28,4 +28,10 @@ public static class SeedData
         new StudyRoom { Id = 1, Name = "Room A" },
         new StudyRoom { Id = 2, Name = "Room B" },
     };
+
+    public static List<Event> Events() => new()
+    {
+        new Event { Id = 1, Name = "Children's Story Hour", Date = DateOnly.FromDateTime(DateTime.Today.AddDays(1)), StartTime = new TimeOnly(10, 0), EndTime = new TimeOnly(11, 0), Capacity = 2 },
+        new Event { Id = 2, Name = "Author Talk: Local Writers", Date = DateOnly.FromDateTime(DateTime.Today.AddDays(3)), StartTime = new TimeOnly(18, 0), EndTime = new TimeOnly(19, 30), Capacity = 20 },
+    };
 }
