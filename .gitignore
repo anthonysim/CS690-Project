@@ -1,2 +1,7 @@
 bin/
 obj/
+
+# Generated data files (re-seeded on first run if missing)
+books.txt
+patrons.txt
+loans.txt

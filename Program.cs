@@ -1,10 +1,26 @@
 using final_project.Data;
-using final_project.Models;
 using final_project.Services;
+using final_project.Storage;
 
-var books = SeedData.Books();
-var patrons = SeedData.Patrons();
-var loans = new List<Loan>();
+var bookRepository = new BookRepository();
+var patronRepository = new PatronRepository();
+var loanRepository = new LoanRepository();
+
+var books = bookRepository.Load();
+if (books.Count == 0)
+{
+    books = SeedData.Books();
+    bookRepository.Save(books);
+}
+
+var patrons = patronRepository.Load();
+if (patrons.Count == 0)
+{
+    patrons = SeedData.Patrons();
+    patronRepository.Save(patrons);
+}
+
+var loans = loanRepository.Load();
 
 var bookService = new BookService(books);
 var loanService = new LoanService(books, patrons, loans);
@@ -73,4 +89,10 @@ void CheckOutBook()
 
     var (success, message) = loanService.CheckOut(bookId, patronId);
     Console.WriteLine(message);
+
+    if (success)
+    {
+        bookRepository.Save(books);
+        loanRepository.Save(loans);
+    }
 }
