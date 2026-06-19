@@ -15,5 +15,17 @@ public static class SeedData
     {
         new Patron { Id = 1, Name = "Maria Lopez" },
         new Patron { Id = 2, Name = "James Carter" },
+        new Patron { Id = 3, Name = "Sam Reed", IsBlocked = true },
+    };
+
+    public static List<Loan> Loans() => new()
+    {
+        new Loan { Id = 1, BookId = 3, PatronId = 1, CheckoutDate = DateTime.Today.AddDays(-20), DueDate = DateTime.Today.AddDays(-6) },
+    };
+
+    public static List<StudyRoom> StudyRooms() => new()
+    {
+        new StudyRoom { Id = 1, Name = "Room A" },
+        new StudyRoom { Id = 2, Name = "Room B" },
     };
 }

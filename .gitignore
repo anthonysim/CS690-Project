@@ -5,3 +5,5 @@ obj/
 books.txt
 patrons.txt
 loans.txt
+studyrooms.txt
+reservations.txt
