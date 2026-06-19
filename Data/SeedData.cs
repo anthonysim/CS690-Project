@@ -1,0 +1,19 @@
+using final_project.Models;
+
+namespace final_project.Data;
+
+public static class SeedData
+{
+    public static List<Book> Books() => new()
+    {
+        new Book { Id = 1, Title = "The Midnight Library", Author = "Matt Haig", Isbn = "9780525559474", TotalCopies = 1, AvailableCopies = 0 },
+        new Book { Id = 2, Title = "Atomic Habits", Author = "James Clear", Isbn = "9780735211292", TotalCopies = 3, AvailableCopies = 2 },
+        new Book { Id = 3, Title = "Where the Crawdads Sing", Author = "Delia Owens", Isbn = "9780735219090", TotalCopies = 2, AvailableCopies = 1 },
+    };
+
+    public static List<Patron> Patrons() => new()
+    {
+        new Patron { Id = 1, Name = "Maria Lopez" },
+        new Patron { Id = 2, Name = "James Carter" },
+    };
+}
