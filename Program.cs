@@ -51,7 +51,7 @@ void SearchBooks()
 
     foreach (var book in results)
     {
-        Console.WriteLine($"[{book.Id}] {book.Title} by {book.Author} — {book.GetStatus()} ({book.AvailableCopies}/{book.TotalCopies} copies)");
+        Console.WriteLine($"[{book.Id}] {book.Title} by {book.Author} — {book.GetStatus()} ({book.AvailableCopies} of {book.TotalCopies} available)");
     }
 }
 
