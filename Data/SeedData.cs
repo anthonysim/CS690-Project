@@ -13,8 +13,8 @@ public static class SeedData
 
     public static List<Patron> Patrons() => new()
     {
-        new Patron { Id = 1, Name = "Maria Lopez" },
-        new Patron { Id = 2, Name = "James Carter" },
+        new Patron { Id = 1, Name = "Anthony Sim" },
+        new Patron { Id = 2, Name = "James Harden" },
         new Patron { Id = 3, Name = "Sam Reed", IsBlocked = true },
     };
 
