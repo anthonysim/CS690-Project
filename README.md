@@ -83,7 +83,23 @@ Models/      Domain entities (Book, Patron, Loan, StudyRoom, RoomReservation)
 Services/    Business logic (BookService, LoanService, RoomReservationService)
 Storage/     Text-file repositories (load/save each entity)
 Data/        Seed data used when no data files exist yet
+Tests/       xUnit tests for the Services
 Program.cs   Console menu and entry point
+```
+
+## Tests
+
+Unit tests cover the three service modules:
+
+- **BookServiceTests** — catalog search (blank term, title/author/ISBN match, case-insensitivity, no match)
+- **LoanServiceTests** — checkout success/failure paths (no copies, blocked patron, overdue patron) and overdue loan filtering
+- **RoomReservationServiceTests** — reservation success/failure paths (bad time range, overlapping booking, unknown room)
+
+Run them with:
+
+```bash
+cd Tests
+dotnet test
 ```
 
 ## Current scope
