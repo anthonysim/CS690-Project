@@ -5,6 +5,8 @@ using final_project.Storage;
 var bookRepository = new BookRepository();
 var patronRepository = new PatronRepository();
 var loanRepository = new LoanRepository();
+var studyRoomRepository = new StudyRoomRepository();
+var reservationRepository = new RoomReservationRepository();
 
 var books = bookRepository.Load();
 if (books.Count == 0)
@@ -21,9 +23,24 @@ if (patrons.Count == 0)
 }
 
 var loans = loanRepository.Load();
+if (loans.Count == 0)
+{
+    loans = SeedData.Loans();
+    loanRepository.Save(loans);
+}
+
+var rooms = studyRoomRepository.Load();
+if (rooms.Count == 0)
+{
+    rooms = SeedData.StudyRooms();
+    studyRoomRepository.Save(rooms);
+}
+
+var reservations = reservationRepository.Load();
 
 var bookService = new BookService(books);
 var loanService = new LoanService(books, patrons, loans);
+var roomReservationService = new RoomReservationService(rooms, patrons, reservations);
 
 while (true)
 {
@@ -31,7 +48,9 @@ while (true)
     Console.WriteLine("=== Library Branch Manager ===");
     Console.WriteLine("1. Search books");
     Console.WriteLine("2. Check out a book");
-    Console.WriteLine("3. Exit");
+    Console.WriteLine("3. View overdue loans");
+    Console.WriteLine("4. Reserve a study room");
+    Console.WriteLine("5. Exit");
     Console.Write("Choose an option: ");
 
     var choice = Console.ReadLine();
@@ -46,6 +65,12 @@ while (true)
             CheckOutBook();
             break;
         case "3":
+            ViewOverdueLoans();
+            break;
+        case "4":
+            ReserveStudyRoom();
+            break;
+        case "5":
             return;
         default:
             Console.WriteLine("Invalid option.");
@@ -94,5 +119,75 @@ void CheckOutBook()
     {
         bookRepository.Save(books);
         loanRepository.Save(loans);
+    }
+}
+
+void ViewOverdueLoans()
+{
+    var overdueLoans = loanService.GetOverdueLoans();
+    if (overdueLoans.Count == 0)
+    {
+        Console.WriteLine("No overdue loans.");
+        return;
+    }
+
+    foreach (var loan in overdueLoans)
+    {
+        var book = books.FirstOrDefault(b => b.Id == loan.BookId);
+        var patron = patrons.FirstOrDefault(p => p.Id == loan.PatronId);
+        var daysOverdue = (DateTime.Today - loan.DueDate).Days;
+        Console.WriteLine($"{patron?.Name ?? "Unknown patron"} — \"{book?.Title ?? "Unknown book"}\" — due {loan.DueDate:MMM d, yyyy} — {daysOverdue} day(s) overdue");
+    }
+}
+
+void ReserveStudyRoom()
+{
+    Console.WriteLine("Study rooms:");
+    foreach (var room in rooms)
+    {
+        Console.WriteLine($"[{room.Id}] {room.Name}");
+    }
+
+    Console.Write("Patron ID: ");
+    if (!int.TryParse(Console.ReadLine(), out var patronId))
+    {
+        Console.WriteLine("Invalid patron ID.");
+        return;
+    }
+
+    Console.Write("Room ID: ");
+    if (!int.TryParse(Console.ReadLine(), out var roomId))
+    {
+        Console.WriteLine("Invalid room ID.");
+        return;
+    }
+
+    Console.Write("Date (yyyy-MM-dd): ");
+    if (!DateOnly.TryParse(Console.ReadLine(), out var date))
+    {
+        Console.WriteLine("Invalid date.");
+        return;
+    }
+
+    Console.Write("Start time (HH:mm): ");
+    if (!TimeOnly.TryParse(Console.ReadLine(), out var startTime))
+    {
+        Console.WriteLine("Invalid start time.");
+        return;
+    }
+
+    Console.Write("End time (HH:mm): ");
+    if (!TimeOnly.TryParse(Console.ReadLine(), out var endTime))
+    {
+        Console.WriteLine("Invalid end time.");
+        return;
+    }
+
+    var (success, message) = roomReservationService.Reserve(roomId, patronId, date, startTime, endTime);
+    Console.WriteLine(message);
+
+    if (success)
+    {
+        reservationRepository.Save(reservations);
     }
 }

@@ -3,36 +3,35 @@ using final_project.Models;
 
 namespace final_project.Storage;
 
-public class PatronRepository
+public class StudyRoomRepository
 {
-    private const string FilePath = "patrons.txt";
+    private const string FilePath = "studyrooms.txt";
 
-    public List<Patron> Load()
+    public List<StudyRoom> Load()
     {
         if (!File.Exists(FilePath))
-            return new List<Patron>();
+            return new List<StudyRoom>();
 
-        var patrons = new List<Patron>();
+        var rooms = new List<StudyRoom>();
         foreach (var line in File.ReadAllLines(FilePath))
         {
             if (string.IsNullOrWhiteSpace(line))
                 continue;
 
             var parts = line.Split('|');
-            patrons.Add(new Patron
+            rooms.Add(new StudyRoom
             {
                 Id = int.Parse(parts[0], CultureInfo.InvariantCulture),
-                Name = parts[1],
-                IsBlocked = bool.Parse(parts[2])
+                Name = parts[1]
             });
         }
 
-        return patrons;
+        return rooms;
     }
 
-    public void Save(List<Patron> patrons)
+    public void Save(List<StudyRoom> rooms)
     {
-        var lines = patrons.Select(p => string.Join('|', p.Id, p.Name, p.IsBlocked));
+        var lines = rooms.Select(r => string.Join('|', r.Id, r.Name));
         File.WriteAllLines(FilePath, lines);
     }
 }
